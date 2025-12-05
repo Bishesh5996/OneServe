@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small customization to help match screenshot spacing and fonts */
+:root {
+  --accent: #F08B3F;
+  --muted-bg: #f5f5f5;
+}
+body { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+
+/* hero image area stretch */
+.hero-clip {
+  clip-path: inset(0 0 0 0);
+}
+
+/* small card shadow in screenshot */
+.card-shadow { box-shadow: 0 4px 18px rgba(20,20,20,0.04); }
