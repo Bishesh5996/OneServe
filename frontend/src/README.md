@@ -6,3 +6,5 @@
 - `features/`: vertical slices (auth, dashboard, etc.)
 - `shared/`: reusable primitives
 - `store/`: global Zustand stores and middlewares
+
+Quick note: run `npm run dev --workspace frontend` to start the Vite dev server with Tailwind styles.
