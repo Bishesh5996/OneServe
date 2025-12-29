@@ -31,3 +31,7 @@ This runs both:
 ## Notes
 - Profile photos are accepted as uploaded images and stored with the user record.
 - Admin credentials are seeded via `backend/src/scripts/ensure-admin-user.js` (update before production).
+
+### Backend specifics
+- API docs are in `backend/README.md` with setup, scripts, and upload notes.
+- Default API port: `4000`. Configure `MONGO_URI` in `backend/.env`.
