@@ -20,10 +20,13 @@ export default defineConfig({
     }
   },
   server: {
-    port: 5173,
-    host: true
+    host: "localhost",
+    port: Number(process.env.PORT ?? 0) || 5173,
+    strictPort: false
   },
   preview: {
-    port: 4173
+    host: "localhost",
+    port: 4173,
+    strictPort: false
   }
 });
