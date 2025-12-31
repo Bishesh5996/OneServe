@@ -7,7 +7,7 @@ import { useCartStore } from "@stores/useCartStore.js";
 import { apiClient } from "@utils/apiClient.js";
 import { formatCurrencyNpr } from "@utils/currency.js";
 
-const STATES = ["CA", "NY", "TX", "WA", "FL", "CO"];
+const NEPAL_PROVINCES = ["Koshi", "Madhesh", "Bagmati", "Gandaki", "Lumbini", "Karnali", "Sudurpashchim"];
 const SHIPPING_FEE = 4.99;
 const TAX_RATE = 0.09;
 const formatCurrency = (value) => formatCurrencyNpr(value);
@@ -20,7 +20,7 @@ export const CheckoutPage = () => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    phone: "+977 9812345678",
     street: "",
     city: "",
     state: "",
@@ -138,8 +138,8 @@ export const CheckoutPage = () => {
                   value={shipping.state}
                   onChange={(event) => handleShippingChange("state", event.target.value)}
                 >
-                  <option value="">Select State</option>
-                  {STATES.map((state) => (
+                  <option value="">Select Province</option>
+                  {NEPAL_PROVINCES.map((state) => (
                     <option key={state} value={state}>
                       {state}
                     </option>
