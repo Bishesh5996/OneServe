@@ -18,10 +18,11 @@ export const OrderConfirmationPage = () => {
   const state = location.state ?? {};
   const order = state.order;
 
+  const items = Array.isArray(order?.items) ? order.items : [];
   const orderNumber = order?.trackingCode ?? state.orderNumber ?? `OS-${Date.now().toString().slice(-6)}`;
-  const total = order?.total ?? state.total ?? 0;
+  const total = Number(order?.total ?? state.total ?? 0);
   const estimatedDelivery = state.estimatedDelivery ?? estimateDeliveryFromDate(order?.createdAt);
-  const itemsCount = order ? order.items.reduce((sum, item) => sum + item.quantity, 0) : state.itemsCount ?? 0;
+  const itemsCount = items.reduce((sum, item) => sum + Number(item.quantity ?? 0), 0) || Number(state.itemsCount ?? 0);
   const orderDate = order?.createdAt ? new Date(order.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
   const email = order?.shipping?.email ?? state.email ?? "your email";
 

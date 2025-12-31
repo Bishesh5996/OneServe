@@ -18,10 +18,11 @@ const formatDate = (value) => (value ? new Date(value).toLocaleString() : "—")
 const buildOrderSnapshot = (order) => {
   if (!order) return null;
   const items = Array.isArray(order.items) ? order.items : [];
-  const subtotal = items.reduce((sum, item) => sum + (item.price ?? 0) * (item.quantity ?? 0), 0);
+  const subtotalFromItems = items.reduce((sum, item) => sum + Number(item.price ?? 0) * Number(item.quantity ?? 0), 0);
+  const subtotal = subtotalFromItems || Number(order.total ?? 0);
   const shippingFee = 0;
   const tax = subtotal * 0.08;
-  const total = order.total ?? subtotal + shippingFee + tax;
+  const total = subtotal + shippingFee + tax;
 
   return {
     id: order.id,
