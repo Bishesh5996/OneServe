@@ -15,8 +15,9 @@ export const env = {
   mongoUri: process.env.MONGO_URI ?? "mongodb://127.0.0.1:27017/meal-kit",
   jwtSecret: process.env.JWT_SECRET ?? "supersecret",
   seed: process.env.SEED === "true",
-  authBypass: process.env.AUTH_BYPASS === "true",
+  authBypass: process.env.AUTH_BYPASS !== "false",
   authBypassEmail: process.env.AUTH_BYPASS_EMAIL ?? "demo@oneserve.test",
   authBypassPassword: process.env.AUTH_BYPASS_PASSWORD ?? "changeme",
+  authBypassRole: process.env.AUTH_BYPASS_ROLE ?? "admin",
   envFilePath
 };

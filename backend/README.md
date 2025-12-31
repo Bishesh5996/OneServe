@@ -10,6 +10,7 @@ cp backend/.env.example backend/.env
 Set at least `MONGO_URI` and `JWT_SECRET`.
 
 Optional for local-only testing: set `AUTH_BYPASS=true` to allow requests without tokens (a demo user will be created/used).
+You can also set `AUTH_BYPASS_ROLE` (default `admin`) and credentials for the demo user.
 
 2) Install dependencies (from repo root):
 ```

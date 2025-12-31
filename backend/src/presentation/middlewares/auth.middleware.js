@@ -14,7 +14,7 @@ const ensureBypassUser = async () => {
     name: "Demo User",
     email: env.authBypassEmail,
     password,
-    role: "buyer"
+    role: env.authBypassRole ?? "buyer"
   });
 };
 
