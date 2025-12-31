@@ -42,3 +42,6 @@ export const currencyConstants = {
   PRICE_DEDUCTION_NPR,
   USD_VALUE_THRESHOLD
 };
+
+// Explicit re-export for compatibility with named imports in navigation/profile
+export { formatCurrencyNpr as formatCurrency };
