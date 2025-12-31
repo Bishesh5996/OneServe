@@ -9,6 +9,8 @@ cp backend/.env.example backend/.env
 ```
 Set at least `MONGO_URI` and `JWT_SECRET`.
 
+Optional for local-only testing: set `AUTH_BYPASS=true` to allow requests without tokens (a demo user will be created/used).
+
 2) Install dependencies (from repo root):
 ```
 npm install --workspaces
