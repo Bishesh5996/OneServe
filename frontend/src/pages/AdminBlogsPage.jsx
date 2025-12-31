@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { apiClient } from "@utils/apiClient.js";
 
@@ -48,6 +48,9 @@ export const AdminBlogsPage = () => {
   const [sections, setSections] = useState([createEmptySection()]);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [blogs, setBlogs] = useState([]);
+  const [loadingBlogs, setLoadingBlogs] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   const updateSection = (index, field, value) => {
     setSections((prev) => prev.map((section, sectionIndex) => (sectionIndex === index ? { ...section, [field]: value } : section)));
@@ -55,12 +58,40 @@ export const AdminBlogsPage = () => {
 
   const addSection = () => setSections((prev) => [...prev, createEmptySection()]);
 
+  const loadBlogs = async () => {
+    setLoadingBlogs(true);
+    try {
+      const response = await apiClient.get("/blogs", { params: { limit: 100 } });
+      setBlogs(response.data?.data ?? response.data ?? []);
+    } catch (error) {
+      // ignore list errors to not block form
+    } finally {
+      setLoadingBlogs(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBlogs();
+  }, []);
+
+  const resetForm = () => {
+    setTitle("");
+    setSlug("");
+    setExcerpt("");
+    setHeroImage("");
+    setReadMinutes(5);
+    setProductId("");
+    setSections([createEmptySection()]);
+    setHeroStatus("");
+    setEditingId(null);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
     setMessage("");
     try {
-      await apiClient.post("/blogs", {
+      const payload = {
         title,
         slug,
         excerpt,
@@ -68,18 +99,18 @@ export const AdminBlogsPage = () => {
         productId: productId || undefined,
         readMinutes: Number(readMinutes) || 5,
         sections: sections.filter((section) => section.heading || section.body || section.image)
-      });
-      setTitle("");
-      setSlug("");
-      setExcerpt("");
-      setHeroImage("");
-      setReadMinutes(5);
-      setProductId("");
-      setSections([createEmptySection()]);
-      setMessage("Blog published successfully.");
-      setHeroStatus("");
+      };
+      if (editingId) {
+        await apiClient.patch(`/blogs/${editingId}`, payload);
+        setMessage("Blog updated successfully.");
+      } else {
+        await apiClient.post("/blogs", payload);
+        setMessage("Blog published successfully.");
+      }
+      resetForm();
+      loadBlogs();
     } catch (error) {
-      setMessage(error.response?.data?.message ?? "Unable to publish blog. Please try again.");
+      setMessage(error.response?.data?.message ?? "Unable to save blog. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -102,10 +133,27 @@ export const AdminBlogsPage = () => {
     }
   };
 
+  const startEdit = (blog) => {
+    setEditingId(blog.id);
+    setTitle(blog.title ?? "");
+    setSlug(blog.slug ?? "");
+    setExcerpt(blog.excerpt ?? "");
+    setHeroImage(blog.heroImage ?? "");
+    setProductId(blog.productId ?? "");
+    setReadMinutes(blog.readMinutes ?? 5);
+    setSections(
+      (blog.sections ?? []).length
+        ? blog.sections.map((section) => ({ heading: section.heading ?? "", body: section.body ?? "", image: section.image ?? "", imageStatus: "" }))
+        : [createEmptySection()]
+    );
+    setHeroStatus("");
+    setMessage("");
+  };
+
   return (
     <section className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-white">Publish New Blog</h1>
+        <h1 className="text-2xl font-semibold text-white">{editingId ? "Edit Blog" : "Publish New Blog"}</h1>
         <p className="text-sm text-slate-400">Share tips, tricks, and guides with OneServe readers.</p>
       </header>
 
@@ -172,10 +220,46 @@ export const AdminBlogsPage = () => {
 
         {message && <p className="rounded-2xl bg-slate-900 px-4 py-2 text-sm text-orange-200">{message}</p>}
 
-        <button className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-black disabled:opacity-60" disabled={submitting} type="submit">
-          {submitting ? "Publishing…" : "Publish Blog"}
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-black disabled:opacity-60" disabled={submitting} type="submit">
+            {submitting ? (editingId ? "Saving…" : "Publishing…") : editingId ? "Save Changes" : "Publish Blog"}
+          </button>
+          {editingId && (
+            <button className="rounded-full border border-slate-600 px-6 py-3 text-sm font-semibold text-orange-100" onClick={resetForm} type="button">
+              Cancel Edit
+            </button>
+          )}
+        </div>
       </form>
+
+      <section className="rounded-3xl border border-slate-800 bg-slate-950 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Existing Blogs</h2>
+            <p className="text-sm text-slate-400">Click edit to update content.</p>
+          </div>
+          {loadingBlogs && <span className="text-xs text-slate-400">Loading…</span>}
+        </div>
+        <div className="mt-4 space-y-2">
+          {blogs.length ? (
+            blogs.map((blog) => (
+              <div key={blog.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold text-white">{blog.title}</p>
+                  <p className="text-xs text-slate-400">{blog.slug}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="rounded-full border border-orange-300 px-4 py-1 text-xs font-semibold text-orange-200" onClick={() => startEdit(blog)} type="button">
+                    Edit
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-slate-400">No blogs found.</p>
+          )}
+        </div>
+      </section>
     </section>
   );
 };

@@ -60,6 +60,31 @@ export class BlogRepository {
     return this.map(doc);
   }
 
+  async update(identifier, data) {
+    const existing = await this.findBySlugOrId(identifier);
+    if (!existing) return null;
+
+    const payload = {};
+    if (data.title) payload.title = data.title;
+    if (data.slug) payload.slug = slugify(data.slug);
+    if (data.excerpt !== undefined) payload.excerpt = data.excerpt;
+    if (data.heroImage !== undefined) payload.heroImage = data.heroImage;
+    if (data.productId !== undefined) payload.productId = data.productId;
+    if (data.readMinutes !== undefined) payload.readMinutes = data.readMinutes;
+    if (data.publishedAt) payload.publishedAt = data.publishedAt;
+    if (Array.isArray(data.sections)) {
+      payload.sections = data.sections.map((section) => ({
+        heading: section.heading,
+        body: section.body,
+        image: section.image
+      }));
+    }
+
+    const query = Types.ObjectId.isValid(identifier) ? { _id: identifier } : { slug: identifier };
+    const updated = await BlogModel.findOneAndUpdate(query, payload, { new: true, runValidators: true });
+    return updated ? this.map(updated) : null;
+  }
+
   async seed(blogs = []) {
     await BlogModel.deleteMany({});
     await BlogModel.insertMany(blogs);
