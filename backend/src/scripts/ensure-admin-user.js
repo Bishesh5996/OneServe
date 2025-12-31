@@ -1,28 +1,38 @@
 import bcrypt from "bcryptjs";
 
+import { env } from "../config/env.js";
 import { UserModel } from "../infrastructure/db/models/user.model.js";
 
-const ADMIN_EMAIL = "Bishesh5996@gmail.com";
-const ADMIN_PASSWORD = "1234567890";
-const ADMIN_NAME = "OneServe Admin";
-
 export const ensureAdminUser = async () => {
-  const existing = await UserModel.findOne({ email: ADMIN_EMAIL });
+  const email = env.adminEmail;
+  const password = env.adminPassword;
+  const name = env.adminName;
+
+  const existing = await UserModel.findOne({ email });
   if (!existing) {
-    const hashed = await bcrypt.hash(ADMIN_PASSWORD, 10);
+    const hashed = await bcrypt.hash(password, 10);
     await UserModel.create({
-      name: ADMIN_NAME,
-      email: ADMIN_EMAIL,
+      name,
+      email,
       password: hashed,
       role: "admin"
     });
-    console.log("Created default admin account");
+    console.log(`Created default admin account (${email})`);
     return;
   }
 
+  let changed = false;
   if (existing.role !== "admin") {
     existing.role = "admin";
-    await existing.save();
+    changed = true;
     console.log("Updated existing admin account role");
+  }
+  if (env.adminResetPassword) {
+    existing.password = await bcrypt.hash(password, 10);
+    changed = true;
+    console.log("Reset admin password from env");
+  }
+  if (changed) {
+    await existing.save();
   }
 };
