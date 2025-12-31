@@ -21,12 +21,12 @@ export default defineConfig({
   },
   server: {
     host: "localhost",
-    port: Number(process.env.PORT ?? 0) || 5173,
-    strictPort: false
+    port: Number(process.env.PORT ?? 0) || 0,
+    strictPort: false // allow Vite to choose an open port if the default is blocked
   },
   preview: {
     host: "localhost",
-    port: 4173,
+    port: Number(process.env.PREVIEW_PORT ?? 0) || 0,
     strictPort: false
   }
 });
