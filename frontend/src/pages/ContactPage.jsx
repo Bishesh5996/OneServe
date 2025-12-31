@@ -94,7 +94,7 @@ export const ContactPage = () => {
       </div>
 
       <div className="grid gap-6 text-center text-sm font-semibold text-black md:grid-cols-3">
-        <ContactDetail heading="Call Us" lines={["Mon-Fri: 11am – 8pm", "Sat-Sun: 9am – 10pm", "+1 (555) 204-8899"]} />
+        <ContactDetail heading="Call Us" lines={["Mon-Fri: 11am – 8pm", "Sat-Sun: 9am – 10pm", "+977 9812345678"]} />
         <ContactDetail heading="Email" lines={["support@oneserve.com", "orders@oneserve.com"]} />
         <ContactDetail heading="Our Location" lines={["113 DurbarMarg", "Kathmandu, Nepal"]} />
       </div>
