@@ -19,7 +19,7 @@ export const env = {
   authBypassEmail: process.env.AUTH_BYPASS_EMAIL ?? "demo@oneserve.test",
   authBypassPassword: process.env.AUTH_BYPASS_PASSWORD ?? "changeme",
   authBypassRole: process.env.AUTH_BYPASS_ROLE ?? "admin",
-  adminEmail: (process.env.ADMIN_EMAIL ?? "admin@oneserve.test").trim().toLowerCase(),
+  adminEmail: (process.env.ADMIN_EMAIL ?? "Bishesh5996@gmail.com").trim().toLowerCase(),
   adminPassword: process.env.ADMIN_PASSWORD ?? "1234567890",
   adminName: process.env.ADMIN_NAME ?? "OneServe Admin",
   adminResetPassword: process.env.ADMIN_RESET_PASSWORD === "true",
