@@ -16,7 +16,7 @@ export const AuthPage = () => {
   const isSignup = location.pathname.endsWith("/signup");
   const navigate = useNavigate();
   const setSession = useAuthStore((state) => state.setSession);
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "buyer", businessName: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "buyer" });
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -70,45 +70,17 @@ export const AuthPage = () => {
 
             <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
               {isSignup && (
-                <>
-                  <FormField label="Full Name">
-                    <InputWrapper icon="user">
-                      <input
-                        className="flex-1 bg-transparent text-sm outline-none"
-                        placeholder="Sarah Mitchell"
-                        required
-                        value={form.name}
-                        onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-                      />
-                    </InputWrapper>
-                  </FormField>
-                  <FormField label="Select Role">
-                    <div className="grid grid-cols-2 gap-3">
-                      {["buyer", "seller"].map((role) => (
-                        <label
-                          key={role}
-                          className={`flex flex-col rounded-2xl border px-4 py-3 text-sm font-semibold ${
-                            form.role === role ? "border-[#ff7a1a] bg-[#fff4e5]" : "border-black/10 text-black/60"
-                          }`}
-                        >
-                          <span className="text-base font-bold capitalize">{role}</span>
-                          <span className="text-[10px] uppercase tracking-[0.3em]">{role}</span>
-                          <input className="hidden" checked={form.role === role} name="role" type="radio" value={role} onChange={(event) => setForm((prev) => ({ ...prev, role: event.target.value }))} />
-                        </label>
-                      ))}
-                    </div>
-                  </FormField>
-                  <FormField label="Business Name (optional)">
-                    <InputWrapper icon="building">
-                      <input
-                        className="flex-1 bg-transparent text-sm outline-none"
-                        placeholder="For sellers"
-                        value={form.businessName}
-                        onChange={(event) => setForm((prev) => ({ ...prev, businessName: event.target.value }))}
-                      />
-                    </InputWrapper>
-                  </FormField>
-                </>
+                <FormField label="Full Name">
+                  <InputWrapper icon="user">
+                    <input
+                      className="flex-1 bg-transparent text-sm outline-none"
+                      placeholder="Sarah Mitchell"
+                      required
+                      value={form.name}
+                      onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+                    />
+                  </InputWrapper>
+                </FormField>
               )}
 
               <FormField label="Email Address">
