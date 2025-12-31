@@ -8,6 +8,17 @@ import { apiClient } from "@utils/apiClient.js";
 import { formatCurrencyNpr } from "@utils/currency.js";
 
 const NEPAL_PROVINCES = ["Koshi", "Madhesh", "Bagmati", "Gandaki", "Lumbini", "Karnali", "Sudurpashchim"];
+const PROVINCE_DISTRICTS = {
+  Koshi: ["Taplejung", "Sankhuwasabha", "Solukhumbu", "Okhaldhunga", "Khotang", "Bhojpur", "Dhankuta", "Tehrathum", "Panchthar", "Ilam", "Jhapa", "Morang", "Sunsari", "Udayapur"],
+  Madhesh: ["Saptari", "Siraha", "Dhanusha", "Mahottari", "Sarlahi", "Bara", "Parsa", "Rautahat"],
+  Bagmati: ["Sindhuli", "Ramechhap", "Dolakha", "Bhaktapur", "Dhading", "Kathmandu", "Kavrepalanchok", "Lalitpur", "Nuwakot", "Rasuwa", "Sindhupalchok", "Chitwan", "Makwanpur"],
+  Gandaki: ["Gorkha", "Manang", "Mustang", "Myagdi", "Kaski", "Lamjung", "Syangja", "Tanahun", "Baglung", "Parbat"],
+  Lumbini: ["Parasi", "Rupandehi", "Kapilvastu", "Arghakhanchi", "Gulmi", "Palpa", "Dang", "Pyuthan", "Rolpa", "Rukum East", "Banke", "Bardiya"],
+  Karnali: ["Dolpa", "Humla", "Jumla", "Kalikot", "Mugu", "Salyan", "Surkhet", "Dailekh", "Jajarkot", "Rukum West"],
+  Sudurpashchim: ["Baitadi", "Bajhang", "Bajura", "Darchula", "Kanchanpur", "Dadeldhura", "Doti", "Kailali", "Achham"]
+};
+const findProvinceForDistrict = (district) =>
+  Object.entries(PROVINCE_DISTRICTS).find(([, districts]) => districts.includes(district))?.[0] ?? "";
 const SHIPPING_FEE = 4.99;
 const TAX_RATE = 0.09;
 const formatCurrency = (value) => formatCurrencyNpr(value);
@@ -24,6 +35,7 @@ export const CheckoutPage = () => {
     street: "",
     city: "",
     state: "",
+    district: "",
     zip: ""
   });
   const [payment, setPayment] = useState({
@@ -131,17 +143,40 @@ export const CheckoutPage = () => {
               <TextField className="md:col-span-2" label="Street Address" value={shipping.street} onChange={(value) => handleShippingChange("street", value)} required />
               <TextField label="City" value={shipping.city} onChange={(value) => handleShippingChange("city", value)} required />
               <label className="text-sm font-semibold text-black">
-                State
+                Province
                 <select
                   className="mt-2 w-full rounded-2xl border border-black/10 px-4 py-3"
                   required
                   value={shipping.state}
-                  onChange={(event) => handleShippingChange("state", event.target.value)}
+                  onChange={(event) => {
+                    const province = event.target.value;
+                    setShipping((prev) => ({ ...prev, state: province, district: "" }));
+                  }}
                 >
                   <option value="">Select Province</option>
                   {NEPAL_PROVINCES.map((state) => (
                     <option key={state} value={state}>
                       {state}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm font-semibold text-black">
+                District
+                <select
+                  className="mt-2 w-full rounded-2xl border border-black/10 px-4 py-3"
+                  required
+                  value={shipping.district}
+                  onChange={(event) => {
+                    const district = event.target.value;
+                    const province = findProvinceForDistrict(district);
+                    setShipping((prev) => ({ ...prev, district, state: province || prev.state }));
+                  }}
+                >
+                  <option value="">Select District</option>
+                  {(shipping.state ? PROVINCE_DISTRICTS[shipping.state] ?? [] : NEPAL_PROVINCES.flatMap((p) => PROVINCE_DISTRICTS[p])).map((district) => (
+                    <option key={district} value={district}>
+                      {district}
                     </option>
                   ))}
                 </select>
