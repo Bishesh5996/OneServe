@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { apiClient } from "@utils/apiClient.js";
+
 const INITIAL_FORM = {
   name: "",
   email: "",
@@ -11,22 +13,31 @@ export const ContactPage = () => {
   const [form, setForm] = useState(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
+  const [showThanks, setShowThanks] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (submitting) return;
     setSubmitting(true);
     setStatus("");
-    setTimeout(() => {
-      setSubmitting(false);
+    setError("");
+    try {
+      await apiClient.post("/contact", form);
       setForm(INITIAL_FORM);
       setStatus("Thanks! We received your message and will reply within one business day.");
-    }, 800);
+      setShowThanks(true);
+    } catch (err) {
+      const message = err?.response?.data?.message || "Sorry, we could not send your message. Please try again.";
+      setError(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -90,6 +101,7 @@ export const ContactPage = () => {
             </button>
           </div>
           {status && <p className="text-center text-sm font-semibold text-emerald-600">{status}</p>}
+          {error && <p className="text-center text-sm font-semibold text-red-600">{error}</p>}
         </form>
       </div>
 
@@ -98,6 +110,22 @@ export const ContactPage = () => {
         <ContactDetail heading="Email" lines={["support@oneserve.com", "orders@oneserve.com"]} />
         <ContactDetail heading="Our Location" lines={["113 DurbarMarg", "Kathmandu, Nepal"]} />
       </div>
+
+      {showThanks && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <h2 className="text-2xl font-bold text-black">Thank you for reaching out!</h2>
+            <p className="mt-3 text-sm text-black/70">We received your message and will get back to you soon.</p>
+            <button
+              className="mt-6 w-full rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-orange-400"
+              onClick={() => setShowThanks(false)}
+              type="button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

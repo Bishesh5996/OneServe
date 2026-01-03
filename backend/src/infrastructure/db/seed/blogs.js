@@ -34,9 +34,9 @@ export const seedBlogs = async (productCatalog = []) => {
     return [];
   }
 
-  const articles = collection.slice(0, Math.min(24, collection.length)).map((product, index) => ({
+  const articles = collection.map((product, index) => ({
     title: `The secret tips & tricks to prepare ${product.name}`,
-    slug: `${slugify(product.name)}-${index}`,
+    slug: `${slugify(product.slug ?? product.name)}-${index + 1}`,
     excerpt: `${product.description} Learn how we plate it perfectly every time.`,
     heroImage: product.image,
     productId: product.id,
